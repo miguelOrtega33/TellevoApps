@@ -24,7 +24,7 @@
   </ion-list>
   <ion-searchbar type="text"  [(ngModel)]="end" (input)="updateSearchResults()" placeholder="Destino" > </ion-searchbar>
   <br>
-  <ion-list *ngIf="autocompleteItems" [hidden]="autocompleteItems.length == 0">
+  <ion-list *ngIf="autocompleteItems" [hidden]="autocompleteItems.length === 0">
     <ion-item *ngFor="let item of autocompleteItems" tappable (click)="selectSearchResult(item)">
       {{ item.description }}
     </ion-item>
