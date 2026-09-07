@@ -171,12 +171,19 @@ ion-content {
   box-shadow: 0 7px 18px rgba(29, 58, 82, 0.08);
 }
 
-.trip-map {
-  display: block;
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  object-position: center;
+.route-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 112px;
+  padding: 0 42px;
+  color: #0b8f96;
+  background: linear-gradient(135deg, #dff4ef, #eff9f7);
+
+  span { height: 3px; flex: 1; border-radius: 4px; background: repeating-linear-gradient(90deg, #0b8f96 0 11px, transparent 11px 18px); }
+  ion-icon { z-index: 1; font-size: 1.5rem; }
+  .route-start { margin-right: 10px; font-size: .85rem; }
+  .route-end { margin-left: 10px; }
 }
 
 .trip-card ion-card-content {

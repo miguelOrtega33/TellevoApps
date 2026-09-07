@@ -21,9 +21,9 @@ export class AppComponent {
 
   compartirApp(){
     Share.share({
-      title: 'Compartir myApp',
-      url: 'https://bilbaolabs.cl/',
-      dialogTitle: 'Disfruta y comparte',
+      title: 'Tellevo',
+      text: 'Encuentra y comparte rutas con Tellevo.',
+      dialogTitle: 'Compartir Tellevo',
     });
 }
 cerrarSesion(){

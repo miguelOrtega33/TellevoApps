@@ -1,89 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
-import { ElementRef, ViewChild, NgZone } from '@angular/core';
-  declare var google: any;
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
+import { TripService } from '../services/trip.service';
 
-declare var google: any;
+@Component({ selector: 'app-mapa', templateUrl: './mapa.page.html', styleUrls: ['./mapa.page.scss'] })
+export class MapaPage {
+  submitting = false;
+  tripForm = this.fb.group({
+    origin: ['', [Validators.required, Validators.minLength(2)]],
+    destination: ['', [Validators.required, Validators.minLength(2)]],
+    departureTime: ['', Validators.required],
+    seats: [2, [Validators.required, Validators.min(1), Validators.max(8)]],
+    price: [0, [Validators.required, Validators.min(0)]],
+    description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(180)]],
+  });
 
-@Component({
-  selector: 'app-mapa',
-  templateUrl: './mapa.page.html',
-  styleUrls: ['./mapa.page.scss'],
-})
-export class MapaPage implements OnInit {
+  constructor(private fb: FormBuilder, private tripService: TripService, private auth: AuthService, private alertController: AlertController, private router: Router) {}
 
-  constructor(private platform: Platform, private zone: NgZone) { }
-
-  ngOnInit() {
+  async publicar(): Promise<void> {
+    if (this.tripForm.invalid || this.submitting) { this.tripForm.markAllAsTouched(); return; }
+    const value = this.tripForm.getRawValue();
+    const driverName = this.auth.currentUser?.name;
+    if (!driverName) { return; }
+    this.submitting = true;
+    this.tripService.addTrip({ driverName, origin: value.origin ?? '', destination: value.destination ?? '', departureTime: this.formatDate(value.departureTime ?? ''), seats: Number(value.seats), price: Number(value.price), description: value.description ?? '' });
+    this.submitting = false;
+    const alert = await this.alertController.create({ header: 'Ruta publicada', message: 'Tu viaje ya aparece disponible para otros pasajeros.', buttons: ['Ver viajes'] });
+    await alert.present(); await alert.onDidDismiss(); await this.router.navigate(['/viajes']);
   }
 
-  @ViewChild('map') mapElement: ElementRef | undefined;
-  public map: any;
-  public start: any = "Duoc UC: Sede Melipilla - Serrano, Melipilla, Chile";
-  public end: any = "Pomaire";
-  public latitude: any;
-  public longitude: any;
-  public directionsService: any;
-  public directionsDisplay: any;
-  public autocompleteItems:any;
-
-  ionViewDidEnter() {
-    this.platform.ready().then(() => {
-      this.initMap()
-    })
-  }
-
-  initMap() {
-    this.directionsService = new google.maps.DirectionsService;
-    this.directionsDisplay = new google.maps.DirectionsRenderer;
-    let latLng = new google.maps.LatLng(this.latitude, this.longitude);
-    let mapOptions = {
-      zoom: 5,
-      zoomControl: false,
-      scaleControl: false,
-      mapTypeComtrol: false,
-      streetViewControl: false,
-      fullscreamControl: false,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    this.map = new google.maps.Map(this.mapElement!.nativeElement, mapOptions);
-    this.directionsDisplay.setMap(this.map);
-    this.calculateAndDisplayRoute();
-  }
-
-  calculateAndDisplayRoute() {
-    this.directionsService.route({
-      origin: this.start,
-      destination: this.end,
-      travelMode: 'DRIVING'
-    }, (response: any, status: string) => {
-      if (status === 'OK') {
-        this.directionsDisplay.setDirections(response);
-      } else {
-        window.alert('Directions request failed due to ' + status);
-      }
-    });
-  }
-
-  updateSearchResults() {
-    let GoogleAutocomplete = new google.maps.places.AutocompleteService();
-    if (this.end == '') {
-      this.autocompleteItems = [];
-      return;
-    }
-    GoogleAutocomplete!.getPlacePredictions({ input: this.end },
-      (predictions: any, status: any) => {
-        this.autocompleteItems = [];
-        this.zone.run(() => {
-          predictions.forEach((prediction: any) => {
-            this.autocompleteItems!.push(prediction);
-          });
-        });
-      });
-  }
-  selectSearchResult(item: any) {
-    this.end = item.description
-    this.autocompleteItems = []
-    this.initMap()
+  private formatDate(value: string): string {
+    if (!value) { return 'Horario por confirmar'; }
+    const date = new Date(value);
+    return new Intl.DateTimeFormat('es-CL', { weekday: 'short', hour: '2-digit', minute: '2-digit' }).format(date);
   }
 }
