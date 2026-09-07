@@ -17,8 +17,7 @@ export class RegistroPage {
     const { nombre, email, contrasena } = this.formularioRegistro.getRawValue();
     try {
       await this.auth.register(nombre ?? '', email ?? '', contrasena ?? '');
-      const alert = await this.alertController.create({ header: 'Cuenta creada', message: 'Ya puedes iniciar sesión con tu correo.', buttons: ['Continuar'] });
-      await alert.present(); await alert.onDidDismiss(); await this.router.navigate(['/inicio']);
+      await this.router.navigate(['/tellevo']);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'No pudimos crear tu cuenta.';
       const alert = await this.alertController.create({ header: 'Revisa tus datos', message, buttons: ['Entendido'] }); await alert.present();

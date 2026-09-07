@@ -37,7 +37,7 @@ export class AuthService {
     }
   }
 
-  async register(name: string, email: string, password: string): Promise<void> {
+  async register(name: string, email: string, password: string): Promise<UserSession> {
     const normalizedEmail = this.normalizeEmail(email);
     const users = this.readUsers();
 
@@ -55,6 +55,8 @@ export class AuthService {
     };
 
     localStorage.setItem(this.usersKey, JSON.stringify([...users, profile]));
+    this.saveSession(profile);
+    return { id: profile.id, name: profile.name, email: profile.email };
   }
 
   async login(email: string, password: string): Promise<boolean> {
