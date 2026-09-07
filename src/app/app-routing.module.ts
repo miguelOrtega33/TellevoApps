@@ -1,20 +1,18 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AutenticadoGuard } from './guard/autenticado.guard';
+import { NoAutenticadoGuard } from './guard/no-autenticado.guard';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'carga',
+    redirectTo: 'inicio',
     pathMatch: 'full'
   },
   {
-    path: 'folder',
-    loadChildren: () => import('./folder/folder.module').then( m => m.FolderPageModule)
-  },
-  {
     path: 'registro',
-    loadChildren: () => import('./registro/registro.module').then( m => m.RegistroPageModule)
+    loadChildren: () => import('./registro/registro.module').then( m => m.RegistroPageModule),
+    canActivate: [NoAutenticadoGuard]
   },
   {
     path: 'viajes',
@@ -23,15 +21,13 @@ const routes: Routes = [
   },
   {
     path: 'inicio',
-    loadChildren: () => import('./inicio/inicio.module').then( m => m.InicioPageModule)
+    loadChildren: () => import('./inicio/inicio.module').then( m => m.InicioPageModule),
+    canActivate: [NoAutenticadoGuard]
   },
   {
     path: 'restablecer-contrasena',
-    loadChildren: () => import('./restablecer-contrasena/restablecer-contrasena.module').then( m => m.RestablecerContrasenaPageModule)
-  },
-  {
-    path: 'carga',
-    loadChildren: () => import('./carga/carga.module').then( m => m.CargaPageModule)
+    loadChildren: () => import('./restablecer-contrasena/restablecer-contrasena.module').then( m => m.RestablecerContrasenaPageModule),
+    canActivate: [NoAutenticadoGuard]
   },
   {
     path: 'tellevo',

@@ -1,10 +1,10 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
+  <ion-split-pane contentId="main-content" *ngIf="auth.isAuthenticated; else publicPages">
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
         <ion-list id="inbox-list">
-          <ion-list-header>Tellevoapoapps</ion-list-header>
-          <ion-note>tellevoapps@duocuc.cl</ion-note>
+          <ion-list-header>Tellevo</ion-list-header>
+          <ion-note>Movilidad compartida</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
@@ -16,7 +16,7 @@
 
         <ion-item (click)="compartirApp()">
           <ion-icon slot="start" ios="share-social" md="share-social" ></ion-icon>
-          <ion-label>Compartir</ion-label>
+          <ion-label>Compartir la app</ion-label>
         </ion-item>
 
         <ion-item (click)="abrirMapa()">
@@ -34,4 +34,7 @@
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
+  <ng-template #publicPages>
+    <ion-router-outlet></ion-router-outlet>
+  </ng-template>
 </ion-app>

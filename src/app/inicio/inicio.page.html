@@ -1,32 +1,22 @@
-<ion-header style="background-color: #0cbccc;">
-  <ion-toolbar color="micolor">
-    <ion-title>Inicio de Sesion</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <form [formGroup]="formularioLogin">
-    <ion-item lines="full">
-      <ion-label position="floating">Nombre de usuario</ion-label>
-      <ion-input formControlName="nombre" type="text" placeholder="usuario@empresa.cl" required></ion-input>
-    </ion-item>
-    <ion-item lines="full">
-      <ion-label position="floating">Contraseña</ion-label>
-      <ion-input formControlName="contrasena" type="password" placeholder="ingresar contraseña" required></ion-input>
-    </ion-item>
-    <ion-row>
-      <ion-col>
-        <ion-button type="submit" color="danger" expand="block" (click)="ingresar()">Ingresar</ion-button>
-        <a [routerLink]="['/restablecer-contrasena']" class="small-text">Olvidaste tu contraseña?</a>
-        <ion-button [routerLink]="['/registro']" expand="block" color="danger">Registrarse</ion-button>
-      </ion-col>
-    </ion-row>
-  </form>
-
-
-
-
-
+<ion-content [fullscreen]="true" class="auth-content">
+  <main class="auth-page">
+    <section class="auth-intro">
+      <div class="brand-mark"><ion-icon name="car-sport"></ion-icon></div>
+      <p class="eyebrow">TELLEVO</p>
+      <h1>Muévete acompañado</h1>
+      <p>Encuentra rutas cercanas y comparte cada trayecto de forma simple.</p>
+    </section>
+    <section class="auth-card" aria-labelledby="login-title">
+      <div class="auth-heading"><h2 id="login-title">Inicia sesión</h2><p>Ingresa para ver y publicar rutas.</p></div>
+      <form [formGroup]="formularioLogin" (ngSubmit)="ingresar()" novalidate>
+        <ion-item lines="none"><ion-icon slot="start" name="mail-outline"></ion-icon><ion-input formControlName="email" type="email" label="Correo electrónico" labelPlacement="stacked" autocomplete="email"></ion-input></ion-item>
+        <p class="field-error" *ngIf="formularioLogin.controls.email.touched && formularioLogin.controls.email.invalid">Ingresa un correo válido.</p>
+        <ion-item lines="none"><ion-icon slot="start" name="lock-closed-outline"></ion-icon><ion-input formControlName="contrasena" [type]="showPassword ? 'text' : 'password'" label="Contraseña" labelPlacement="stacked" autocomplete="current-password"></ion-input><ion-button fill="clear" slot="end" type="button" (click)="showPassword = !showPassword" [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"><ion-icon slot="icon-only" [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon></ion-button></ion-item>
+        <p class="field-error" *ngIf="formularioLogin.controls.contrasena.touched && formularioLogin.controls.contrasena.invalid">La contraseña es obligatoria.</p>
+        <ion-button class="submit-button" type="submit" expand="block" [disabled]="submitting">{{ submitting ? 'Ingresando…' : 'Ingresar' }}</ion-button>
+      </form>
+      <a class="text-link" [routerLink]="['/restablecer-contrasena']">¿Olvidaste tu contraseña?</a>
+      <p class="auth-switch">¿Aún no tienes cuenta? <a [routerLink]="['/registro']">Regístrate</a></p>
+    </section>
+  </main>
 </ion-content>
-
-

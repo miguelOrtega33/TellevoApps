@@ -1,33 +1,14 @@
-ion-menu-button {
-    color: var(--ion-color-primary);
-  }
-
-  #container {
-    text-align: center;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  #container strong {
-    font-size: 20px;
-    line-height: 26px;
-  }
-
-  #container p {
-    font-size: 16px;
-    line-height: 22px;
-    color: #8c8c8c;
-    margin: 0;
-  }
-
-  #container a {
-    text-decoration: none;
-  }
-
-  ion-content{
-    --ion-background-color: #107acc;
-  }
-
+ion-content { --background: #f5f8fa; }
+.auth-page { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(320px, .7fr); min-height: 100%; max-width: 1060px; margin: 0 auto; padding: 40px 24px; gap: 56px; align-items: center; }
+.auth-intro { color: #17324d; }
+.brand-mark { display: grid; width: 52px; height: 52px; place-items: center; border-radius: 16px; color: #fff; background: #0b8f96; font-size: 1.8rem; box-shadow: 0 12px 24px rgba(11, 143, 150, .25); }
+.eyebrow { margin: 24px 0 8px; color: #0b8f96; font-size: .74rem; font-weight: 750; letter-spacing: .1em; }
+.auth-intro h1 { margin: 0; font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: -.05em; }
+.auth-intro > p:last-child { max-width: 430px; color: #62748a; font-size: 1.05rem; line-height: 1.55; }
+.auth-card { padding: 32px; border: 1px solid #e5ebf1; border-radius: 22px; background: #fff; box-shadow: 0 16px 35px rgba(30, 58, 82, .1); }
+.auth-heading h2 { margin: 0; color: #17324d; font-size: 1.55rem; }.auth-heading p { margin: 8px 0 24px; color: #62748a; }
+ion-item { --background: #f7fafb; --border-radius: 10px; --padding-start: 14px; --min-height: 64px; margin-top: 14px; color: #0b8f96; } ion-input { --color: #17324d; }
+.field-error { min-height: 16px; margin: 5px 4px 0; color: #ba1a1a; font-size: .77rem; }
+.submit-button { --background: #0b8f96; --border-radius: 10px; --box-shadow: none; height: 46px; margin: 20px 0 16px; font-weight: 700; }
+.text-link, .auth-switch a { color: #087d85; font-weight: 650; text-decoration: none; }.text-link { display: inline-block; font-size: .9rem; }.auth-switch { margin: 24px 0 0; color: #62748a; font-size: .9rem; }
+@media (max-width: 700px) { .auth-page { grid-template-columns: 1fr; gap: 30px; padding: 32px 20px; }.auth-intro h1 { font-size: 2.35rem; }.auth-card { padding: 24px 20px; } }

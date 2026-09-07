@@ -1,79 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 
-@Component({
-  selector: 'app-registro',
-  templateUrl: './registro.page.html',
-  styleUrls: ['./registro.page.scss'],
-})
-export class RegistroPage implements OnInit {
-  formularioLogin: FormGroup;
-
-  constructor(private router: Router, public fb: FormBuilder, private alertController: AlertController) {
-    this.formularioLogin = this.fb.group({
-      'nombre': new FormControl("", Validators.required),
-      'contrasena': new FormControl("", Validators.required),
-      'confirmar_contrasena': new FormControl("", Validators.required)
-    })
-  }
-  ngOnInit() {
-  }
-  async registrar() {
-    var f = this.formularioLogin.value;
-
-    if (this.formularioLogin.invalid) {
-      const alert = await this.alertController.create({
-        header: 'Mensaje',
-        message: 'Debes ingresar todos los datos',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-      return;
-    } else if (f.contrasena != f.confirmar_contrasena) {
-      const alert = await this.alertController.create({
-        header: 'Mensaje',
-        message: 'Las contraseñas no coinciden',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-      return;
-    } else if (f.contrasena.length < 6) {
-      const alert = await this.alertController.create({
-        header: 'Mensaje',
-        message: 'Contraseñas demasiado corta',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-      return;
-    } else if (f.nombre.length < 8) {
-      const alert = await this.alertController.create({
-        header: 'Mensaje',
-        message: 'Nombre demasiado corta',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-      return;
-    } else {
-      var nombreUsuario = f.nombre;
-      var contrasenaUsuario = f.contrasena;
-
-      localStorage.setItem('nombreUsuario', nombreUsuario);
-      localStorage.setItem('contrasenaUsuario', contrasenaUsuario);
-
-      const alert = await this.alertController.create({
-        header: 'Mensaje',
-        message: 'Registrado correctamente',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-      this.router.navigate(["/inicio"]);
-    }
+@Component({ selector: 'app-registro', templateUrl: './registro.page.html', styleUrls: ['./registro.page.scss'] })
+export class RegistroPage {
+  showPassword = false;
+  submitting = false;
+  formularioRegistro = this.fb.group({ nombre: ['', [Validators.required, Validators.minLength(2)]], email: ['', [Validators.required, Validators.email]], contrasena: ['', [Validators.required, Validators.minLength(8)]], confirmarContrasena: ['', [Validators.required]] });
+  constructor(private fb: FormBuilder, private router: Router, private alertController: AlertController, private auth: AuthService) {}
+  get passwordsMatch(): boolean { const { contrasena, confirmarContrasena } = this.formularioRegistro.getRawValue(); return Boolean(contrasena && contrasena === confirmarContrasena); }
+  async registrar(): Promise<void> {
+    if (this.formularioRegistro.invalid || !this.passwordsMatch || this.submitting) { this.formularioRegistro.markAllAsTouched(); return; }
+    this.submitting = true;
+    const { nombre, email, contrasena } = this.formularioRegistro.getRawValue();
+    try {
+      await this.auth.register(nombre ?? '', email ?? '', contrasena ?? '');
+      const alert = await this.alertController.create({ header: 'Cuenta creada', message: 'Ya puedes iniciar sesión con tu correo.', buttons: ['Continuar'] });
+      await alert.present(); await alert.onDidDismiss(); await this.router.navigate(['/inicio']);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'No pudimos crear tu cuenta.';
+      const alert = await this.alertController.create({ header: 'Revisa tus datos', message, buttons: ['Entendido'] }); await alert.present();
+    } finally { this.submitting = false; }
   }
 }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Share } from '@capacitor/share';
 import { MenuController } from '@ionic/angular';
+import { AuthService } from './services/auth.service';
 
 
 @Component({
@@ -11,15 +12,12 @@ import { MenuController } from '@ionic/angular';
 })
 export class AppComponent {
   public appPages = [
-    { title: 'Ingreso de usuario', url: '/inicio', icon: 'home' },
-    { title: 'restablecer-contrasena', url: 'restablecer-contrasena', icon: 'lock-closed' },
-    { title: 'Registro', url: '/registro', icon: 'person-add' },
-    { title: 'Servicios', url: '/servicios', icon: 'nutrition' },
-    { title: 'viajes', url: '/viajes', icon: 'nutrition' },
-    { title: 'registro-ruta', url: '/mapa', icon: 'nutrition' },
+    { title: 'Inicio', url: '/tellevo', icon: 'home' },
+    { title: 'Buscar viajes', url: '/viajes', icon: 'car' },
+    { title: 'Publicar ruta', url: '/mapa', icon: 'map' },
   ];
 
-  constructor(public router: Router, private menu: MenuController) {}
+  constructor(public router: Router, private menu: MenuController, public auth: AuthService) {}
 
   compartirApp(){
     Share.share({
@@ -29,7 +27,7 @@ export class AppComponent {
     });
 }
 cerrarSesion(){
-  localStorage.removeItem('autenticado');
+  this.auth.logout();
   this.router.navigate(["/inicio"]);
   this.menu.close();
 }

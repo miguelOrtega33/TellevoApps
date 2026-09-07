@@ -1,55 +1,38 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 
-@Component({
-  selector: 'app-inicio',
-  templateUrl: './inicio.page.html',
-  styleUrls: ['./inicio.page.scss'],
-})
-export class InicioPage implements OnInit {
-  
-  formularioLogin: FormGroup;
+@Component({ selector: 'app-inicio', templateUrl: './inicio.page.html', styleUrls: ['./inicio.page.scss'] })
+export class InicioPage {
+  showPassword = false;
+  submitting = false;
+  formularioLogin = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    contrasena: ['', [Validators.required]],
+  });
 
-  constructor(public fb: FormBuilder, private alertController: AlertController, private router: Router) {
-    this.formularioLogin = this.fb.group({
-      'nombre': new FormControl("", Validators.required),
-      'contrasena': new FormControl("", Validators.required)
-    })
-  }
+  constructor(private fb: FormBuilder, private alertController: AlertController, private router: Router, private auth: AuthService) {}
 
-  ngOnInit() {
-  }
-
-  async ingresar() {
-    var f = this.formularioLogin.value;
-
-    var nombreUsuario = localStorage.getItem('nombreUsuario');
-    var contrasenaUsuario = localStorage.getItem('contrasenaUsuario');
-
-    if (this.formularioLogin.invalid) {
-      const alert = await this.alertController.create({
-        header: 'Mensaje',
-        message: 'Debes ingresar todos los datos',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-      return;
-    } else if (nombreUsuario == f.nombre && contrasenaUsuario == f.contrasena) {
-      localStorage.setItem('autenticado','true');
-      this.router.navigate(["/tellevo"]);      
-    } else {
-      const alert = await this.alertController.create({
-        header: 'Mensaje',
-        message: 'Datos incorrectos',
-        buttons: ['OK']
-      });
-
-      await alert.present();
+  async ingresar(): Promise<void> {
+    if (this.formularioLogin.invalid || this.submitting) {
+      this.formularioLogin.markAllAsTouched();
       return;
     }
+    this.submitting = true;
+    const { email, contrasena } = this.formularioLogin.getRawValue();
+    const isValid = await this.auth.login(email ?? '', contrasena ?? '');
+    this.submitting = false;
+    if (isValid) {
+      await this.router.navigate(['/tellevo']);
+      return;
+    }
+    const alert = await this.alertController.create({
+      header: 'No pudimos iniciar sesión',
+      message: 'Revisa tu correo y contraseña, o crea una cuenta si aún no tienes una.',
+      buttons: ['Entendido'],
+    });
+    await alert.present();
   }
-
 }

@@ -1,23 +1,16 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { CanActivate, Router, UrlTree } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NoAutenticadoGuard implements CanActivate {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private auth: AuthService) { }
 
   canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      if (localStorage.getItem('autenticado')) {
-        this.router.navigate(["/inicio"]);
-        return false;
-      } else {
-        return true;
-      }
+  ): boolean | UrlTree {
+    return !this.auth.isAuthenticated || this.router.createUrlTree(['/tellevo']);
   }
-  
 }

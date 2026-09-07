@@ -1,31 +1,16 @@
-<ion-header style="background-color: #0cbccc;">
-  <ion-toolbar color="micolor">
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>Registro</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <img class="img" src="https://img.freepik.com/vector-premium/icono-conductor-empresario-personaje-plano-volante_176411-4417.jpg?w=2000"  >
-  <form [formGroup]="formularioLogin">
-    <ion-item lines="full">
-      <ion-label position="floating">Nombre(s)</ion-label>
-      <ion-input formControlName="nombre" type="text" required></ion-input>
-    </ion-item>
-    <ion-item lines="full">
-      <ion-label position="floating">Contraseña</ion-label>
-      <ion-input formControlName="contrasena" type="password" required></ion-input>
-    </ion-item>
-    <ion-item lines="full">
-      <ion-label position="floating">Repita contraseña</ion-label>
-      <ion-input formControlName="confirmar_contrasena" type="password" required></ion-input>
-    </ion-item>
-    <ion-row>
-      <ion-col>
-        <ion-button type="submit" color="danger" expand="block" (click)="registrar()">Registrar</ion-button>
-      </ion-col>
-    </ion-row>
-  </form>
+<ion-content [fullscreen]="true">
+  <main class="auth-page">
+    <section class="auth-intro"><div class="brand-mark"><ion-icon name="person-add"></ion-icon></div><p class="eyebrow">TELLEVO</p><h1>Comienza tu ruta</h1><p>Crea tu perfil para encontrar viajes o compartir los tuyos.</p></section>
+    <section class="auth-card" aria-labelledby="register-title">
+      <div class="auth-heading"><h2 id="register-title">Crea tu cuenta</h2><p>Solo te tomará un minuto.</p></div>
+      <form [formGroup]="formularioRegistro" (ngSubmit)="registrar()" novalidate>
+        <ion-item lines="none"><ion-icon slot="start" name="person-outline"></ion-icon><ion-input formControlName="nombre" label="Nombre" labelPlacement="stacked" autocomplete="name"></ion-input></ion-item><p class="field-error" *ngIf="formularioRegistro.controls.nombre.touched && formularioRegistro.controls.nombre.invalid">Ingresa al menos 2 caracteres.</p>
+        <ion-item lines="none"><ion-icon slot="start" name="mail-outline"></ion-icon><ion-input formControlName="email" type="email" label="Correo electrónico" labelPlacement="stacked" autocomplete="email"></ion-input></ion-item><p class="field-error" *ngIf="formularioRegistro.controls.email.touched && formularioRegistro.controls.email.invalid">Ingresa un correo válido.</p>
+        <ion-item lines="none"><ion-icon slot="start" name="lock-closed-outline"></ion-icon><ion-input formControlName="contrasena" [type]="showPassword ? 'text' : 'password'" label="Contraseña" labelPlacement="stacked" autocomplete="new-password"></ion-input><ion-button fill="clear" slot="end" type="button" (click)="showPassword = !showPassword"><ion-icon slot="icon-only" [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon></ion-button></ion-item><p class="field-error" *ngIf="formularioRegistro.controls.contrasena.touched && formularioRegistro.controls.contrasena.invalid">Usa al menos 8 caracteres.</p>
+        <ion-item lines="none"><ion-icon slot="start" name="shield-checkmark-outline"></ion-icon><ion-input formControlName="confirmarContrasena" [type]="showPassword ? 'text' : 'password'" label="Confirmar contraseña" labelPlacement="stacked" autocomplete="new-password"></ion-input></ion-item><p class="field-error" *ngIf="formularioRegistro.controls.confirmarContrasena.touched && !passwordsMatch">Las contraseñas deben coincidir.</p>
+        <ion-button class="submit-button" type="submit" expand="block" [disabled]="submitting">{{ submitting ? 'Creando cuenta…' : 'Crear cuenta' }}</ion-button>
+      </form>
+      <p class="auth-switch">¿Ya tienes cuenta? <a [routerLink]="['/inicio']">Inicia sesión</a></p>
+    </section>
+  </main>
 </ion-content>
