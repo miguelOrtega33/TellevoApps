@@ -26,3 +26,29 @@ Transformar la vista `tellevo` en una pantalla de inicio clara para pasajeros y 
 ### Próximo paso sugerido
 
 Aplicar el mismo sistema visual a las vistas de inicio de sesión, listado completo de viajes y mapa; después, reemplazar los datos de demostración por rutas reales.
+
+## Paso 2 — Acceso, viajes y publicación de rutas
+
+Commit: `b2c491e feat(trips): publicar y solicitar rutas locales`
+
+### Cambios aplicados
+
+- Se eliminó el guard que validaba solo un valor `autenticado` en el navegador.
+- Se centralizó el acceso en `AuthService`: las contraseñas se almacenan como hash SHA-256 con una sal aleatoria y la sesión no contiene la contraseña.
+- Se protegieron las vistas privadas y se ocultó el menú hasta iniciar sesión.
+- Se rediseñaron inicio de sesión, registro y recuperación de contraseña con validación accesible por campo.
+- Se eliminaron las páginas de plantilla `folder` y `carga`, además de imágenes, tarjetas giratorias y claves de servicios externos sin uso.
+- Se reemplazó Google Maps embebido por un formulario de publicación de rutas que guarda origen, destino, hora, cupos, costo y descripción.
+- Se agregó `TripService`, que provee rutas iniciales, publica nuevas rutas y conserva las solicitudes de viaje localmente.
+- Se rediseñó el listado de viajes con búsqueda, estado de cupos, precios y confirmación de solicitud.
+- Se agregaron pruebas unitarias para el servicio de viajes y se retiraron pruebas de plantilla inválidas.
+
+### Validación
+
+- `npm.cmd run build` finaliza correctamente.
+- La pantalla de inicio de sesión fue comprobada en la vista previa local.
+- `npm.cmd test -- --watch=false --browsers=ChromeHeadless` no pudo iniciar Chrome Headless por un error de GPU y perfil de Chrome del equipo. La compilación de las pruebas sí llegó a completarse antes del fallo del navegador.
+
+### Límite de la versión actual
+
+El proyecto sigue siendo una aplicación sin servidor. El hash evita conservar contraseñas legibles, pero un inicio de sesión realmente seguro, recuperación por correo, control de solicitudes y almacenamiento compartido requieren una API con base de datos, tokens de sesión y reglas de autorización del lado del servidor.
