@@ -1,82 +1,108 @@
-<ion-header style="background-color: #0cbccc;">
-  <ion-toolbar color="micolor">
-    <ion-title slot="start">Home</ion-title>
+<ion-header class="app-header" translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menú"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Tellevo</ion-title>
+    <ion-button fill="clear" slot="end" (click)="abrirMapa()" aria-label="Abrir mapa">
+      <ion-icon slot="icon-only" name="map-outline"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="arriba">
-    <h2> Bienvenido {{ nombreUsuario }}</h2>
-  </div>
-
-  <div class="buscar">
-    <h1 class="titulo">¿A donde vamos hoy ?</h1>
-    <div style="display: flex; justify-content: center;">
-      <ion-button [routerLink]="['/viajes']" > Mas viajes </ion-button>
-      <ion-button  (click)="abrirMapa()">
-        <ion-icon slot="start" ios="speedometer" md="speedometer" ></ion-icon>
-        Tellevo
-      </ion-button >
-    </div>
-    <div id="clima">
-      <img [src]=weatherIcon>
-      Actual: {{ weatherTemp.temp }}°C
-    </div>
-  </div>
-
-  <div style="display: flex; flex-wrap: wrap;">
-    <ion-card class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front">
-          <img alt="Silhouette of mountains" src="https://appassets.mvtdev.com/map/188/l/642/595288/1623235.jpg" />
-          <ion-card-header>
-            <ion-card-title>Miguel</ion-card-title>
-            <ion-card-subtitle>Melipilla - Bollenar </ion-card-subtitle>
-          </ion-card-header>
-        </div>
-        <div class="flip-card-back">
-          <ion-card-header id="pasajeroImagen">
-            <img alt="Silhouette of mountains" src="https://img.freepik.com/fotos-premium/mono-vestido-traje-negocios-formal_847288-285.jpg?w=2000" />
-          </ion-card-header>
-          <ion-card-content>
-            <p> Hola, me dirijo desde el lider de vicuña mackena hasta metro bellas artes salgo desde casa 17:30</p>
-            <ion-button [routerLink]="['/']" expand="block" color="danger">Solicitar</ion-button>
-          </ion-card-content>
+  <main class="home-page">
+    <section class="welcome-card" aria-labelledby="welcome-title">
+      <div class="welcome-copy">
+        <p class="eyebrow">MOVILIDAD COMPARTIDA</p>
+        <h1 id="welcome-title">Hola, {{ nombreUsuario || 'viajero/a' }}</h1>
+        <p>Encuentra una ruta que te acerque a tu destino o comparte la tuya.</p>
+        <div class="welcome-actions">
+          <ion-button [routerLink]="['/viajes']">
+            <ion-icon slot="start" name="search-outline"></ion-icon>
+            Buscar viaje
+          </ion-button>
+          <ion-button fill="outline" (click)="abrirMapa()">
+            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            Publicar ruta
+          </ion-button>
         </div>
       </div>
-    </ion-card>
-    <ion-card class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front">
-          <img alt="Silhouette of mountains" src="https://appassets.mvtdev.com/map/188/l/642/595288/1623235.jpg" />
-          <ion-card-header>
-            <ion-card-title>Miguel</ion-card-title>
-            <ion-card-subtitle>Melipilla - Bollenar </ion-card-subtitle>
-          </ion-card-header>
-        </div>
-        <div class="flip-card-back">
-          <ion-card-header id="pasajeroImagen">
-            <img alt="Silhouette of mountains" src="https://img.freepik.com/fotos-premium/mono-vestido-traje-negocios-formal_847288-285.jpg?w=2000" />
-          </ion-card-header>
-          <ion-card-content>
-            <p> Hola, me dirijo desde el lider de vicuña mackena hasta metro bellas artes salgo desde casa 17:30</p>
-            <ion-button id="solicitar" [routerLink]="['/']" expand="block" color="danger">Solicitar</ion-button>
-          </ion-card-content>
-        </div>
+
+      <div class="weather-chip" aria-label="Clima actual">
+        <ion-icon name="partly-sunny-outline"></ion-icon>
+        <span>{{ weatherTemp.temp ? weatherTemp.temp + '°C' : 'Clima disponible pronto' }}</span>
       </div>
-    </ion-card>
+    </section>
 
-  </div>
+    <section class="trips-section" aria-labelledby="trips-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">RUTAS DISPONIBLES</p>
+          <h2 id="trips-title">Viajes cerca de ti</h2>
+        </div>
+        <ion-button fill="clear" [routerLink]="['/viajes']">Ver todos</ion-button>
+      </div>
 
+      <div class="trip-list">
+        <ion-card class="trip-card">
+          <img class="trip-map" alt="Mapa de la ruta desde Melipilla a Bollenar" src="https://appassets.mvtdev.com/map/188/l/642/595288/1623235.jpg" />
+          <ion-card-content>
+            <div class="trip-topline">
+              <div class="driver">
+                <ion-avatar>
+                  <ion-icon name="person"></ion-icon>
+                </ion-avatar>
+                <div>
+                  <h3>Miguel</h3>
+                  <p>Conductor verificado</p>
+                </div>
+              </div>
+              <ion-chip color="success" outline="true">2 cupos</ion-chip>
+            </div>
 
-  <!-- <h3>Noticias</h3>
-    <ion-card class="carta">
-      <img  style="height: 20vh; width: 40vh;" src="https://www.duoc.cl/wp-content/uploads/2023/09/MicrosoftTeams-image-23-1024x768.jpg" />
-      <ion-card-header>
-        <h3 style="color: white;" >Feria San Joaquín Se Vive 2023: el reencuentro de la Innovación, la industria y el futuro</h3>
-        <h5>PUBLICADO EL 1 SEPTIEMBRE, 2023</h5>
-      </ion-card-header>
+            <div class="route">
+              <ion-icon name="navigate-circle-outline"></ion-icon>
+              <div>
+                <strong>Melipilla → Bollenar</strong>
+                <span>Salida hoy a las 17:30</span>
+              </div>
+            </div>
 
-      <ion-button fill="clear">Leer mas </ion-button>
-    </ion-card> -->
+            <p class="trip-description">Desde Líder Vicuña Mackenna hasta Metro Bellas Artes.</p>
+            <ion-button expand="block" [routerLink]="['/viajes']">Ver viaje</ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="trip-card">
+          <img class="trip-map" alt="Mapa de la ruta desde Melipilla a Bollenar" src="https://appassets.mvtdev.com/map/188/l/642/595288/1623235.jpg" />
+          <ion-card-content>
+            <div class="trip-topline">
+              <div class="driver">
+                <ion-avatar>
+                  <ion-icon name="person"></ion-icon>
+                </ion-avatar>
+                <div>
+                  <h3>Miguel</h3>
+                  <p>Conductor verificado</p>
+                </div>
+              </div>
+              <ion-chip color="success" outline="true">2 cupos</ion-chip>
+            </div>
+
+            <div class="route">
+              <ion-icon name="navigate-circle-outline"></ion-icon>
+              <div>
+                <strong>Melipilla → Bollenar</strong>
+                <span>Salida hoy a las 18:15</span>
+              </div>
+            </div>
+
+            <p class="trip-description">Comparte el trayecto y coordina el punto de encuentro.</p>
+            <ion-button expand="block" [routerLink]="['/viajes']">Ver viaje</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </section>
+  </main>
 </ion-content>
