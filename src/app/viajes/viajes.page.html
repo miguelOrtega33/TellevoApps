@@ -1,2 +1,97 @@
-<ion-header translucent="true"><ion-toolbar><ion-buttons slot="start"><ion-menu-button aria-label="Abrir menú"></ion-menu-button></ion-buttons><ion-title>Buscar viajes</ion-title><ion-button fill="clear" slot="end" [routerLink]="['/mapa']" aria-label="Publicar ruta"><ion-icon slot="icon-only" name="add-circle-outline"></ion-icon></ion-button></ion-toolbar></ion-header>
-<ion-content [fullscreen]="true"><main class="trips-page"><section class="trips-hero"><p class="eyebrow">RUTAS COMPARTIDAS</p><h1>Encuentra tu próximo viaje</h1><p>Busca por origen, destino o conductor y coordina tu recorrido.</p><ion-searchbar [(ngModel)]="query" (ionInput)="filterTrips()" placeholder="Ej. Melipilla, Bollenar o Camila" aria-label="Buscar viajes"></ion-searchbar></section><section aria-live="polite"><div class="results-heading"><h2>{{ filteredTrips.length }} viajes disponibles</h2><ion-button fill="clear" [routerLink]="['/mapa']">Publicar ruta</ion-button></div><div class="trips-grid"><ion-card class="travel-card" *ngFor="let trip of filteredTrips"><div class="route-preview" aria-hidden="true"><ion-icon name="ellipse"></ion-icon><span></span><ion-icon name="location"></ion-icon></div><ion-card-content><div class="driver-row"><div class="driver"><ion-avatar><ion-icon name="person"></ion-icon></ion-avatar><div><h3>{{ trip.driverName }}</h3><p>Conductor verificado</p></div></div><ion-chip color="success" outline="true">{{ trip.seats }} cupos</ion-chip></div><div class="route-details"><strong>{{ trip.origin }} <ion-icon name="arrow-forward-outline"></ion-icon> {{ trip.destination }}</strong><span><ion-icon name="time-outline"></ion-icon>{{ trip.departureTime }}</span></div><p class="description">{{ trip.description }}</p><div class="card-footer"><strong>${{ trip.price }} por persona</strong><ion-button [disabled]="isRequested(trip)" (click)="solicitar(trip)">{{ isRequested(trip) ? 'Solicitado' : 'Solicitar viaje' }}</ion-button></div></ion-card-content></ion-card></div><section class="empty-state" *ngIf="!filteredTrips.length"><ion-icon name="search-outline"></ion-icon><h2>No encontramos viajes</h2><p>Prueba otra búsqueda o publica tu propia ruta.</p><ion-button [routerLink]="['/mapa']">Publicar ruta</ion-button></section></section></main></ion-content>
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Viajes</ion-title>
+    <ion-button fill="clear" slot="end" [routerLink]="['/mapa']" aria-label="Publicar ruta">
+      <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <main class="trips-page">
+    <section class="search-panel">
+      <div>
+        <p class="eyebrow">RUTAS COMPARTIDAS</p>
+        <h1>Encuentra tu proximo viaje</h1>
+        <p>Compara conductores, cupos, precio estimado y tiempos antes de solicitar.</p>
+      </div>
+      <ion-searchbar [(ngModel)]="query" (ionInput)="filterTrips()" placeholder="Origen, destino, conductor o vehiculo" aria-label="Buscar viajes"></ion-searchbar>
+      <ion-segment [value]="filter" (ionChange)="setFilter($any($event).detail.value)">
+        <ion-segment-button value="available">
+          <ion-label>Disponibles</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="mine">
+          <ion-label>Mis viajes</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="all">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </section>
+
+    <section aria-live="polite">
+      <div class="results-heading">
+        <h2>{{ filteredTrips.length }} resultados</h2>
+        <ion-button fill="clear" [routerLink]="['/mapa']">Publicar ruta</ion-button>
+      </div>
+
+      <div class="trips-grid">
+        <article class="travel-card" *ngFor="let trip of filteredTrips">
+          <div class="route-preview" aria-hidden="true">
+            <ion-icon name="ellipse"></ion-icon>
+            <span></span>
+            <ion-icon name="location"></ion-icon>
+          </div>
+
+          <div class="card-content">
+            <div class="driver-row">
+              <div class="driver">
+                <ion-avatar><ion-icon name="person"></ion-icon></ion-avatar>
+                <div>
+                  <h3>{{ trip.driverName }}</h3>
+                  <p>{{ trip.rating | number:'1.1-1' }} estrellas · {{ trip.vehicle }}</p>
+                </div>
+              </div>
+              <ion-chip [color]="availableSeats(trip) ? 'success' : 'medium'" outline="true">
+                {{ availableSeats(trip) }} cupos
+              </ion-chip>
+            </div>
+
+            <div class="route-details">
+              <strong>{{ trip.origin }} <ion-icon name="arrow-forward-outline"></ion-icon> {{ trip.destination }}</strong>
+              <span><ion-icon name="time-outline"></ion-icon>{{ trip.departureTime }} · {{ trip.durationMinutes }} min</span>
+              <span><ion-icon name="navigate-outline"></ion-icon>{{ trip.distanceKm }} km · llega en {{ trip.etaMinutes }} min</span>
+            </div>
+
+            <p class="description">{{ trip.description }}</p>
+
+            <div class="status-note" *ngIf="requestForCurrentUser(trip) as request">
+              <ion-icon name="receipt-outline"></ion-icon>
+              <span>Tu solicitud esta {{ requestStatusLabel(request.status).toLowerCase() }}.</span>
+            </div>
+
+            <div class="card-footer">
+              <div>
+                <strong>${{ trip.price }}</strong>
+                <span>por persona</span>
+              </div>
+              <ion-button [disabled]="isRequested(trip) || !availableSeats(trip)" (click)="solicitar(trip)">
+                {{ isRequested(trip) ? 'Solicitado' : availableSeats(trip) ? 'Solicitar' : 'Sin cupos' }}
+              </ion-button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <section class="empty-state" *ngIf="!filteredTrips.length">
+        <ion-icon name="search-outline"></ion-icon>
+        <h2>No encontramos viajes</h2>
+        <p>Prueba otra busqueda o publica tu propia ruta para sumar pasajeros.</p>
+        <ion-button [routerLink]="['/mapa']">Publicar ruta</ion-button>
+      </section>
+    </section>
+  </main>
+</ion-content>
