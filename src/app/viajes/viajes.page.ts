@@ -11,7 +11,7 @@ export class ViajesPage implements OnInit {
   trips: Trip[] = [];
   filteredTrips: Trip[] = [];
   query = '';
-  filter: TripFilter = 'available';
+  filter: TripFilter = 'all';
 
   constructor(private tripService: TripService, private auth: AuthService, private alertController: AlertController) {}
 
