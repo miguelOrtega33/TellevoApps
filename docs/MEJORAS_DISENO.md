@@ -52,3 +52,33 @@ Commit: `b2c491e feat(trips): publicar y solicitar rutas locales`
 ### Límite de la versión actual
 
 El proyecto sigue siendo una aplicación sin servidor. El hash evita conservar contraseñas legibles, pero un inicio de sesión realmente seguro, recuperación por correo, control de solicitudes y almacenamiento compartido requieren una API con base de datos, tokens de sesión y reglas de autorización del lado del servidor.
+
+## Paso 3 — Evolución hacia experiencia tipo ride-hailing
+
+Commits:
+
+- `1542496 feat(trips): agregar motor de viajes compartidos`
+- `541f47b feat(home): convertir inicio en tablero operativo`
+- `488a272 feat(rides): mejorar busqueda y solicitud de viajes`
+- `dd4f507 feat(driver): publicar rutas con estimacion local`
+- `e61faff feat(rides): cerrar solicitudes desde pasajero y conductor`
+
+### Cambios aplicados
+
+- Se amplió el modelo de viajes con estados, solicitudes por pasajero, vehículo, rating, cupos calculados, distancia, duración, ETA y precio sugerido.
+- Se centralizó la lógica de dominio en `TripService`: publicación, solicitud, aceptación, rechazo, cancelación, inicio y completado de viajes.
+- La pantalla principal ahora funciona como tablero: métricas, viaje activo del pasajero, consola del conductor y rutas cercanas.
+- El listado de viajes permite filtrar por rutas disponibles, viajes propios o todos los viajes.
+- La solicitud de cupo admite una nota de recogida y valida cupos antes de persistir.
+- La publicación de rutas ya no depende de una clave externa de mapas para funcionar localmente.
+- El formulario de conductor calcula una estimación local y sugiere precio antes de publicar.
+- Se agregó documentación técnica en `docs/ARQUITECTURA_TELLEVO.md`.
+
+### Validación
+
+- `npm.cmd run build` finaliza correctamente después de cada bloque funcional.
+- Los avisos restantes corresponden a selectores internos de Ionic durante el procesamiento CSS.
+
+### Límite de la versión actual
+
+La app ya permite recorrer un flujo local completo, pero sigue siendo un MVP sin servidor. Para acercarse a producción necesita API, base de datos, ubicación en tiempo real, notificaciones, chat, pagos y autorización del lado del servidor.
