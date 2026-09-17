@@ -225,6 +225,7 @@ ion-chip {
 }
 
 .status-note {
+  justify-content: space-between;
   gap: 8px;
   margin-bottom: 14px;
   padding: 9px 10px;
@@ -233,6 +234,18 @@ ion-chip {
   background: #e7f6f2;
   font-size: .82rem;
   font-weight: 700;
+}
+
+.status-note > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-note ion-button {
+  --color: var(--brand-dark);
+  margin: 0;
+  font-weight: 800;
 }
 
 .card-footer strong,

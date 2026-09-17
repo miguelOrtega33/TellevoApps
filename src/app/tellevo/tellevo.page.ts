@@ -78,6 +78,17 @@ export class TellevoPage implements OnInit {
     await alert.present();
   }
 
+  async rejectRequest(trip: Trip, request: TripRequest): Promise<void> {
+    this.tripService.cancelRequest(trip.id, request.id);
+    this.loadDashboard();
+    const alert = await this.alertController.create({
+      header: 'Solicitud rechazada',
+      message: `La solicitud de ${request.passengerName} quedo cerrada y el cupo sigue disponible.`,
+      buttons: ['Listo'],
+    });
+    await alert.present();
+  }
+
   startTrip(trip: Trip): void {
     this.tripService.startTrip(trip.id);
     this.loadDashboard();

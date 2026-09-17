@@ -132,6 +132,17 @@ export class ViajesPage implements OnInit {
     }
   }
 
+  async cancelOwnRequest(trip: Trip, request: TripRequest): Promise<void> {
+    this.tripService.cancelRequest(trip.id, request.id);
+    this.loadTrips();
+    const alert = await this.alertController.create({
+      header: 'Solicitud cancelada',
+      message: 'El cupo queda liberado y podras solicitar otro viaje cuando quieras.',
+      buttons: ['Entendido'],
+    });
+    await alert.present();
+  }
+
   private loadTrips(): void {
     this.trips = this.tripService.getTrips();
     this.filterTrips();

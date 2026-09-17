@@ -88,7 +88,10 @@
                 <strong>{{ request.passengerName }}</strong>
                 <p>{{ request.pickupNote || 'Sin nota de recogida' }}</p>
               </div>
-              <ion-button size="small" (click)="acceptRequest(trip, request)">Aceptar</ion-button>
+              <div class="request-actions">
+                <ion-button size="small" fill="clear" color="medium" (click)="rejectRequest(trip, request)">Rechazar</ion-button>
+                <ion-button size="small" (click)="acceptRequest(trip, request)">Aceptar</ion-button>
+              </div>
             </div>
           </div>
 

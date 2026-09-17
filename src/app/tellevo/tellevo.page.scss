@@ -169,7 +169,8 @@ ion-content {
 .route,
 .trip-row,
 .request-row,
-.driver-actions {
+.driver-actions,
+.request-actions {
   display: flex;
   align-items: center;
 }
@@ -244,6 +245,10 @@ ion-chip {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 14px;
+}
+
+.request-actions {
+  gap: 6px;
 }
 
 .trip-list {

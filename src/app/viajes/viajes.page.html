@@ -69,8 +69,11 @@
             <p class="description">{{ trip.description }}</p>
 
             <div class="status-note" *ngIf="requestForCurrentUser(trip) as request">
-              <ion-icon name="receipt-outline"></ion-icon>
-              <span>Tu solicitud esta {{ requestStatusLabel(request.status).toLowerCase() }}.</span>
+              <div>
+                <ion-icon name="receipt-outline"></ion-icon>
+                <span>Tu solicitud esta {{ requestStatusLabel(request.status).toLowerCase() }}.</span>
+              </div>
+              <ion-button size="small" fill="clear" *ngIf="request.status === 'requested'" (click)="cancelOwnRequest(trip, request)">Cancelar</ion-button>
             </div>
 
             <div class="card-footer">
