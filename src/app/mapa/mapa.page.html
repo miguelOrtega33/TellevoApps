@@ -1,2 +1,106 @@
-<ion-header translucent="true"><ion-toolbar><ion-buttons slot="start"><ion-menu-button aria-label="Abrir menú"></ion-menu-button></ion-buttons><ion-title>Publicar ruta</ion-title></ion-toolbar></ion-header>
-<ion-content [fullscreen]="true"><main class="route-page"><section class="route-intro"><div class="route-icon"><ion-icon name="map"></ion-icon></div><div><p class="eyebrow">COMPARTE TU TRAYECTO</p><h1>Publica una ruta</h1><p>Indica el recorrido, hora de salida y cupos disponibles para que otros puedan sumarse.</p></div></section><section class="route-card" aria-labelledby="route-form-title"><h2 id="route-form-title">Detalles del viaje</h2><form [formGroup]="tripForm" (ngSubmit)="publicar()" novalidate><div class="form-grid"><ion-item lines="none"><ion-icon slot="start" name="radio-button-on-outline"></ion-icon><ion-input formControlName="origin" label="Origen" labelPlacement="stacked" placeholder="Ej. Melipilla"></ion-input></ion-item><ion-item lines="none"><ion-icon slot="start" name="location-outline"></ion-icon><ion-input formControlName="destination" label="Destino" labelPlacement="stacked" placeholder="Ej. Bollenar"></ion-input></ion-item><ion-item lines="none"><ion-icon slot="start" name="time-outline"></ion-icon><ion-input formControlName="departureTime" type="datetime-local" label="Salida" labelPlacement="stacked"></ion-input></ion-item><ion-item lines="none"><ion-icon slot="start" name="people-outline"></ion-icon><ion-input formControlName="seats" type="number" min="1" max="8" label="Cupos disponibles" labelPlacement="stacked"></ion-input></ion-item><ion-item lines="none"><ion-icon slot="start" name="cash-outline"></ion-icon><ion-input formControlName="price" type="number" min="0" label="Costo por persona" labelPlacement="stacked" placeholder="0"></ion-input></ion-item></div><ion-item class="description-input" lines="none"><ion-icon slot="start" name="create-outline"></ion-icon><ion-textarea formControlName="description" label="Descripción" labelPlacement="stacked" placeholder="Indica punto de encuentro, equipaje o consideraciones." [counter]="true" maxlength="180" autoGrow="true"></ion-textarea></ion-item><p class="field-error" *ngIf="tripForm.touched && tripForm.invalid">Completa origen, destino, fecha, cupos, costo y una descripción de al menos 10 caracteres.</p><div class="route-actions"><ion-button fill="clear" [routerLink]="['/viajes']">Cancelar</ion-button><ion-button type="submit" [disabled]="submitting">{{ submitting ? 'Publicando…' : 'Publicar ruta' }}</ion-button></div></form></section></main></ion-content>
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Publicar ruta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <main class="route-page">
+    <section class="route-intro">
+      <div>
+        <p class="eyebrow">MODO CONDUCTOR</p>
+        <h1>Publica una ruta</h1>
+        <p>Define origen, destino, cupos y precio. Tellevo calcula una estimacion local para que puedas salir rapido.</p>
+      </div>
+      <div class="estimate-strip" aria-label="Estimacion del viaje">
+        <article>
+          <strong>{{ estimate.distanceKm }} km</strong>
+          <span>distancia</span>
+        </article>
+        <article>
+          <strong>{{ estimate.durationMinutes }} min</strong>
+          <span>duracion</span>
+        </article>
+        <article>
+          <strong>${{ estimate.suggestedPrice }}</strong>
+          <span>sugerido</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="route-layout">
+      <section class="route-card" aria-labelledby="route-form-title">
+        <h2 id="route-form-title">Detalles del viaje</h2>
+        <form [formGroup]="tripForm" (ngSubmit)="publicar()" novalidate>
+          <div class="form-grid">
+            <ion-item lines="none">
+              <ion-icon slot="start" name="radio-button-on-outline"></ion-icon>
+              <ion-input formControlName="origin" label="Origen" labelPlacement="stacked" placeholder="Ej. Melipilla"></ion-input>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-icon slot="start" name="location-outline"></ion-icon>
+              <ion-input formControlName="destination" label="Destino" labelPlacement="stacked" placeholder="Ej. Santiago"></ion-input>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-icon slot="start" name="time-outline"></ion-icon>
+              <ion-input formControlName="departureTime" type="datetime-local" label="Salida" labelPlacement="stacked"></ion-input>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-icon slot="start" name="car-outline"></ion-icon>
+              <ion-input formControlName="vehicle" label="Vehiculo" labelPlacement="stacked" placeholder="Ej. Toyota Yaris gris"></ion-input>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-icon slot="start" name="people-outline"></ion-icon>
+              <ion-input formControlName="seats" type="number" min="1" max="8" label="Cupos disponibles" labelPlacement="stacked"></ion-input>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-icon slot="start" name="cash-outline"></ion-icon>
+              <ion-input formControlName="price" type="number" min="0" label="Costo por persona" labelPlacement="stacked"></ion-input>
+              <ion-button fill="clear" slot="end" type="button" (click)="useSuggestedPrice()">Usar</ion-button>
+            </ion-item>
+          </div>
+
+          <ion-item class="description-input" lines="none">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
+            <ion-textarea formControlName="description" label="Notas para pasajeros" labelPlacement="stacked" placeholder="Punto de encuentro, equipaje o condiciones." [counter]="true" maxlength="180" autoGrow="true"></ion-textarea>
+          </ion-item>
+
+          <p class="field-error" *ngIf="tripForm.touched && tripForm.invalid">
+            Completa origen, destino, fecha, vehiculo, cupos, costo y una descripcion de al menos 10 caracteres.
+          </p>
+
+          <div class="route-actions">
+            <ion-button fill="clear" [routerLink]="['/viajes']">Cancelar</ion-button>
+            <ion-button type="submit" [disabled]="submitting">{{ submitting ? 'Publicando...' : 'Publicar ruta' }}</ion-button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="route-preview-panel" aria-label="Vista previa">
+        <div class="route-map" aria-hidden="true">
+          <div class="route-line">
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <div class="preview-content">
+          <p class="eyebrow">VISTA PREVIA</p>
+          <h2>{{ tripForm.controls.origin.value }} → {{ tripForm.controls.destination.value }}</h2>
+          <ul>
+            <li><ion-icon name="timer-outline"></ion-icon>{{ estimate.etaMinutes }} min hasta el punto de partida</li>
+            <li><ion-icon name="speedometer-outline"></ion-icon>{{ estimate.durationMinutes }} min estimados de viaje</li>
+            <li><ion-icon name="wallet-outline"></ion-icon>${{ tripForm.controls.price.value || estimate.suggestedPrice }} por persona</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+  </main>
+</ion-content>
