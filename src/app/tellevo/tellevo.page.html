@@ -1,2 +1,148 @@
-<ion-header class="app-header" translucent="true"><ion-toolbar><ion-buttons slot="start"><ion-menu-button aria-label="Abrir menú"></ion-menu-button></ion-buttons><ion-title>Tellevo</ion-title><ion-button fill="clear" slot="end" (click)="abrirMapa()" aria-label="Publicar ruta"><ion-icon slot="icon-only" name="map-outline"></ion-icon></ion-button></ion-toolbar></ion-header>
-<ion-content [fullscreen]="true"><main class="home-page"><section class="welcome-card" aria-labelledby="welcome-title"><div class="welcome-copy"><p class="eyebrow">MOVILIDAD COMPARTIDA</p><h1 id="welcome-title">Hola, {{ nombreUsuario }}</h1><p>Encuentra una ruta que te acerque a tu destino o comparte la tuya.</p><div class="welcome-actions"><ion-button [routerLink]="['/viajes']"><ion-icon slot="start" name="search-outline"></ion-icon>Buscar viaje</ion-button><ion-button fill="outline" (click)="abrirMapa()"><ion-icon slot="start" name="add-circle-outline"></ion-icon>Publicar ruta</ion-button></div></div><div class="weather-chip"><ion-icon name="car-outline"></ion-icon><span>{{ trips.length }} rutas activas</span></div></section><section class="trips-section" aria-labelledby="trips-title"><div class="section-heading"><div><p class="eyebrow">RUTAS DISPONIBLES</p><h2 id="trips-title">Viajes cerca de ti</h2></div><ion-button fill="clear" [routerLink]="['/viajes']">Ver todos</ion-button></div><div class="trip-list"><ion-card class="trip-card" *ngFor="let trip of trips"><div class="route-preview" aria-hidden="true"><ion-icon class="route-start" name="ellipse"></ion-icon><span></span><ion-icon class="route-end" name="location"></ion-icon></div><ion-card-content><div class="trip-topline"><div class="driver"><ion-avatar><ion-icon name="person"></ion-icon></ion-avatar><div><h3>{{ trip.driverName }}</h3><p>Conductor verificado</p></div></div><ion-chip color="success" outline="true">{{ trip.seats }} cupos</ion-chip></div><div class="route"><ion-icon name="navigate-circle-outline"></ion-icon><div><strong>{{ trip.origin }} → {{ trip.destination }}</strong><span>{{ trip.departureTime }}</span></div></div><p class="trip-description">{{ trip.description }}</p><ion-button expand="block" [routerLink]="['/viajes']">Ver viaje · ${{ trip.price }}</ion-button></ion-card-content></ion-card></div></section></main></ion-content>
+<ion-header class="app-header" translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button aria-label="Abrir menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Tellevo</ion-title>
+    <ion-button fill="clear" slot="end" (click)="abrirMapa()" aria-label="Publicar ruta">
+      <ion-icon slot="icon-only" name="map-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <main class="home-page">
+    <section class="hero-panel" aria-labelledby="welcome-title">
+      <div class="hero-copy">
+        <p class="eyebrow">OPERACION EN VIVO</p>
+        <h1 id="welcome-title">Hola, {{ nombreUsuario }}</h1>
+        <p>Coordina viajes compartidos, confirma pasajeros y sigue tus rutas desde un solo lugar.</p>
+        <div class="hero-actions">
+          <ion-button [routerLink]="['/viajes']">
+            <ion-icon slot="start" name="search-outline"></ion-icon>
+            Buscar viaje
+          </ion-button>
+          <ion-button fill="outline" (click)="abrirMapa()">
+            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            Publicar ruta
+          </ion-button>
+        </div>
+      </div>
+
+      <div class="metric-grid" aria-label="Resumen de actividad">
+        <article>
+          <span>{{ stats.availableTrips }}</span>
+          <p>rutas disponibles</p>
+        </article>
+        <article>
+          <span>{{ stats.activeTrips }}</span>
+          <p>viajes activos</p>
+        </article>
+        <article>
+          <span>{{ stats.pendingRequests }}</span>
+          <p>solicitudes</p>
+        </article>
+        <article>
+          <span>{{ stats.completedTrips }}</span>
+          <p>completados</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="active-trip" *ngIf="activeTrip" aria-labelledby="active-trip-title">
+      <div>
+        <p class="eyebrow">TU VIAJE</p>
+        <h2 id="active-trip-title">{{ activeTrip.origin }} a {{ activeTrip.destination }}</h2>
+        <p>{{ tripStatusLabel(activeTrip) }} con {{ activeTrip.driverName }} · llega en {{ activeTrip.etaMinutes }} min</p>
+      </div>
+      <div class="trip-progress" aria-hidden="true">
+        <span class="is-done"></span>
+        <span [class.is-done]="activeTrip.status !== 'requested'"></span>
+        <span [class.is-done]="activeTrip.status === 'in_progress' || activeTrip.status === 'completed'"></span>
+        <span [class.is-done]="activeTrip.status === 'completed'"></span>
+      </div>
+    </section>
+
+    <section class="driver-console" *ngIf="driverTrips.length" aria-labelledby="driver-console-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">MODO CONDUCTOR</p>
+          <h2 id="driver-console-title">Tus rutas y solicitudes</h2>
+        </div>
+        <ion-button fill="clear" [routerLink]="['/mapa']">Nueva ruta</ion-button>
+      </div>
+
+      <div class="driver-list">
+        <article class="driver-trip" *ngFor="let trip of driverTrips">
+          <div class="trip-row">
+            <div>
+              <strong>{{ trip.origin }} → {{ trip.destination }}</strong>
+              <p>{{ trip.departureTime }} · {{ trip.vehicle }} · {{ availableSeats(trip) }} cupos libres</p>
+            </div>
+            <ion-chip>{{ tripStatusLabel(trip) }}</ion-chip>
+          </div>
+
+          <div class="request-list" *ngIf="pendingRequests(trip).length; else noRequests">
+            <div class="request-row" *ngFor="let request of pendingRequests(trip)">
+              <div>
+                <strong>{{ request.passengerName }}</strong>
+                <p>{{ request.pickupNote || 'Sin nota de recogida' }}</p>
+              </div>
+              <ion-button size="small" (click)="acceptRequest(trip, request)">Aceptar</ion-button>
+            </div>
+          </div>
+
+          <ng-template #noRequests>
+            <p class="muted">Aun no hay solicitudes pendientes para esta ruta.</p>
+          </ng-template>
+
+          <div class="driver-actions" *ngIf="trip.status === 'accepted' || trip.status === 'in_progress'">
+            <ion-button size="small" fill="outline" *ngIf="trip.status === 'accepted'" (click)="startTrip(trip)">Iniciar viaje</ion-button>
+            <ion-button size="small" *ngIf="trip.status === 'in_progress'" (click)="completeTrip(trip)">Completar</ion-button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="trips-section" aria-labelledby="trips-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">CERCA DE TI</p>
+          <h2 id="trips-title">Viajes disponibles</h2>
+        </div>
+        <ion-button fill="clear" [routerLink]="['/viajes']">Ver todos</ion-button>
+      </div>
+
+      <div class="trip-list">
+        <article class="trip-card" *ngFor="let trip of trips">
+          <div class="route-preview" aria-hidden="true">
+            <ion-icon class="route-start" name="ellipse"></ion-icon>
+            <span></span>
+            <ion-icon class="route-end" name="location"></ion-icon>
+          </div>
+          <div class="trip-body">
+            <div class="trip-topline">
+              <div class="driver">
+                <ion-avatar><ion-icon name="person"></ion-icon></ion-avatar>
+                <div>
+                  <h3>{{ trip.driverName }}</h3>
+                  <p>{{ trip.rating | number:'1.1-1' }} estrellas · {{ trip.vehicle }}</p>
+                </div>
+              </div>
+              <ion-chip color="success" outline="true">{{ availableSeats(trip) }} cupos</ion-chip>
+            </div>
+            <div class="route">
+              <ion-icon name="navigate-circle-outline"></ion-icon>
+              <div>
+                <strong>{{ trip.origin }} → {{ trip.destination }}</strong>
+                <span>{{ trip.departureTime }} · {{ trip.distanceKm }} km · {{ trip.durationMinutes }} min</span>
+              </div>
+            </div>
+            <p class="trip-description">{{ trip.description }}</p>
+            <ion-button expand="block" [routerLink]="['/viajes']">Ver viaje · ${{ trip.price }}</ion-button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</ion-content>
